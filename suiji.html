@@ -5,10 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>随机加载页面</title>
     <style>
+        /* 基础布局样式 */
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            min-height: 100vh;
+        }
+        #container {
+            padding-bottom: 60px; /* 给底部按钮留空间 */
+        }
+        #view-all-button {
+            margin: 20px 0;
+            display: inline-block;
+        }
+
         /* 悬浮按钮样式 */
         #favoriteButton {
             position: fixed;
-            bottom: 80px; /* 调整按钮位置 */
+            bottom: 80px;
             right: 20px;
             width: 50px;
             height: 50px;
@@ -16,12 +33,11 @@
             color: white;
             border: none;
             border-radius: 50%;
-            display: none; /* 初始隐藏，加载完成后显示 */
+            display: none;
             align-items: center;
             justify-content: center;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             cursor: pointer;
-            text-align: center;
         }
 
         #favoriteButton img {
@@ -36,19 +52,19 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 80%; /* 增大窗口宽度 */
-            max-width: 500px; /* 设置最大宽度 */
+            width: 80%;
+            max-width: 500px;
             background-color: white;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             padding: 30px;
-            border-radius: 15px; /* 圆角增加 */
+            border-radius: 15px;
             text-align: center;
             z-index: 1000;
         }
 
         #favoriteModal textarea {
             width: 100%;
-            height: 70px; /* 增大文本框高度 */
+            height: 70px;
             margin: 10px 0;
             padding: 10px;
             resize: none;
@@ -66,12 +82,12 @@
             border: none;
             border-radius: 5px;
             color: white;
-            background-color: #007bff; /* 蓝色背景 */
+            background-color: #007bff;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         #favoriteModal button:hover {
-            background-color: #0056b3; /* 深蓝色悬停效果 */
+            background-color: #0056b3;
         }
 
         /* 模态背景 */
@@ -85,45 +101,51 @@
             background-color: rgba(0, 0, 0, 0.5);
             z-index: 999;
         }
+
+        /* 加载提示样式 */
+        #loading {
+            margin: 50px 0;
+            font-size: 24px;
+            text-align: center;
+        }
+        
+        #content {
+            margin: 20px 0;
+            min-height: 300px;
+        }
     </style>
     <script>
-        // 定义 HTML 文件链接数组（此处使用硬编码，手动填入）
+        // 定义 HTML 文件链接数组
         let htmlFiles = [
-            'https://pa-kos.github.io/vid2/ZJCSncFFnm.html',
-            'https://pa-kos.github.io/vid2/KDIPKeFdEF.html',
-            'https://pa-kos.github.io/vid2/mMOPuyHPvC.html',
-            'https://pa-kos.github.io/vid2/ryjhFpmnyC.html',
-            'https://pa-kos.github.io/vid2/rrApZDrChE.html',
-            'https://pa-kos.github.io/vid2/inLlzOpmgP.html'
+            'page1.html',
+            'page2.html',
+            'page3.html',
+            'page4.html',
+            'page5.html'
         ];
         
         let currentLoadedPage = ''; // 当前加载的页面链接
         
-        // 1：随机加载 HTML 文件内容
         function loadRandomPage() {
             const contentDiv = document.getElementById('content');
             const loadingDiv = document.getElementById('loading');
             const favoriteBtn = document.getElementById('favoriteButton');
             
-            // 如果数组为空，则显示错误提示文本
             if (htmlFiles.length === 0) {
                 loadingDiv.textContent = '没有可用的资源了！';
-                contentDiv.innerHTML = '<p class="error">所有资源都已尝试加载，但没有可用的内容。</p>';
+                contentDiv.innerHTML = '<p style="color:red;text-align:center">所有资源都已尝试加载，但没有可用的内容。</p>';
                 return;
             }
             
-            // 随机选择文件
             const randomIndex = Math.floor(Math.random() * htmlFiles.length);
             const selectedFile = htmlFiles[randomIndex];
             currentLoadedPage = selectedFile;
             
-            // 尝试请求文件内容
             fetch(selectedFile)
                 .then(response => {
                     if (response.ok) {
                         return response.text();
                     } else if (response.status === 404) {
-                        // 如果返回404，将文件从数组中移除并重新尝试
                         htmlFiles.splice(randomIndex, 1);
                         loadRandomPage();
                         return Promise.reject('404 Not Found');
@@ -132,40 +154,37 @@
                     }
                 })
                 .then(html => {
-                    // 加载成功，显示内容
                     loadingDiv.style.display = 'none';
                     contentDiv.innerHTML = html;
                     favoriteBtn.style.display = 'flex';
                 })
                 .catch(error => {
                     if (error !== '404 Not Found') {
-                        // 捕获其他错误，将文件从数组中移除并重新尝试
                         htmlFiles.splice(randomIndex, 1);
                         loadRandomPage();
                     }
                 });
         }
         
-        // 2：function showFavoriteModal()显示收藏弹窗
         function showFavoriteModal() {
             const modal = document.getElementById('favoriteModal');
             const modalBackground = document.getElementById('modalBackground');
             const pageLinkInput = document.getElementById('pageLink');
             
-            pageLinkInput.value = window.location.href.replace('suiji.html', currentLoadedPage);
+            // 修正：直接使用当前页面链接，不拼接
+            pageLinkInput.value = currentLoadedPage.includes('http') ? 
+                currentLoadedPage : 
+                window.location.href.replace('suiji.html', currentLoadedPage);
+            
             modal.style.display = 'block';
             modalBackground.style.display = 'block';
         }
         
-        // 3：隐藏收藏弹窗
         function hideFavoriteModal() {
-            const modal = document.getElementById('favoriteModal');
-            const modalBackground = document.getElementById('modalBackground');
-            modal.style.display = 'none';
-            modalBackground.style.display = 'none';
+            document.getElementById('favoriteModal').style.display = 'none';
+            document.getElementById('modalBackground').style.display = 'none';
         }
         
-        // 4：function copyToClipboard()复制链接到剪贴板
         function copyToClipboard() {
             const pageLinkInput = document.getElementById('pageLink');
             pageLinkInput.select();
@@ -176,10 +195,12 @@
     </script>
 </head>
 <body>
-    <h1>随机资源加载器</h1>
-    <div id="loading">正在为您寻找资源...</div>
-    <div id="content"></div>
-    <button onclick="window.location.href='all.html'">点我查看所有</button>
+    <div id="container">
+        <h1>随机资源加载器</h1>
+        <div id="loading">正在为您寻找资源...</div>
+        <div id="content"></div>
+        <button id="view-all-button" onclick="window.location.href='all.html'">点我查看所有</button>
+    </div>
     
     <!-- 悬浮收藏按钮 -->
     <button id="favoriteButton" onclick="showFavoriteModal()">
@@ -199,7 +220,6 @@
     </div>
 
     <script>
-        // 5：页面加载时调用函数，加载随机页面
         window.onload = loadRandomPage;
     </script>
 </body>

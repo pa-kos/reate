@@ -89,7 +89,7 @@
     <script>
     // 定义 HTML 文件链接数组
     let htmlFiles = [
-            'https://pa-kos.github.io/vid2/ZJCSncFFnm.html',
+        'https://pa-kos.github.io/vid2/ZJCSncFFnm.html',
             'https://pa-kos.github.io/vid2/KDIPKeFdEF.html',
             'https://pa-kos.github.io/vid2/mMOPuyHPvC.html',
             'https://pa-kos.github.io/vid2/ryjhFpmnyC.html',
@@ -102,10 +102,9 @@
     function loadRandomPage() {
         const contentDiv = document.getElementById('content');
         const favoriteBtn = document.getElementById('favoriteButton');
-        const originalLink = contentDiv.querySelector('#xunlei').outerHTML; // 保存原始链接
         
         if (htmlFiles.length === 0) {
-            contentDiv.innerHTML = '<h1>没有可用的资源了！</h1><p>所有资源都已尝试加载，但没有可用的内容。</p>' + originalLink;
+            contentDiv.innerHTML = '<h1>没有可用的资源了！</h1><p>所有资源都已尝试加载，但没有可用的内容。</p>';
             return;
         }
         
@@ -126,8 +125,8 @@
                 }
             })
             .then(html => {
-                // 将新内容插入到链接之前
-                contentDiv.innerHTML = html + originalLink;
+                // 完全替换内容，不保留原始链接
+                contentDiv.innerHTML = html;
                 favoriteBtn.style.display = 'flex';
             })
             .catch(error => {

@@ -5,27 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>随机加载页面</title>
     <style>
-        /* 基础布局样式 */
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            position: relative;
-            min-height: 100vh;
-        }
-        #container {
-            padding-bottom: 60px; /* 给底部按钮留空间 */
-        }
-        #view-all-button {
-            margin: 20px 0;
-            display: inline-block;
-        }
-
         /* 悬浮按钮样式 */
         #favoriteButton {
             position: fixed;
-            bottom: 80px;
+            bottom: 80px; /* 调整按钮位置 */
             right: 20px;
             width: 50px;
             height: 50px;
@@ -33,11 +16,12 @@
             color: white;
             border: none;
             border-radius: 50%;
-            display: none;
+            display: none; /* 初始隐藏，加载完成后显示 */
             align-items: center;
             justify-content: center;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             cursor: pointer;
+            text-align: center;
         }
 
         #favoriteButton img {
@@ -52,19 +36,19 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 80%;
-            max-width: 500px;
+            width: 80%; /* 增大窗口宽度 */
+            max-width: 500px; /* 设置最大宽度 */
             background-color: white;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             padding: 30px;
-            border-radius: 15px;
+            border-radius: 15px; /* 圆角增加 */
             text-align: center;
             z-index: 1000;
         }
 
         #favoriteModal textarea {
             width: 100%;
-            height: 70px;
+            height: 70px; /* 增大文本框高度 */
             margin: 10px 0;
             padding: 10px;
             resize: none;
@@ -82,12 +66,12 @@
             border: none;
             border-radius: 5px;
             color: white;
-            background-color: #007bff;
+            background-color: #007bff; /* 蓝色背景 */
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         #favoriteModal button:hover {
-            background-color: #0056b3;
+            background-color: #0056b3; /* 深蓝色悬停效果 */
         }
 
         /* 模态背景 */
@@ -100,18 +84,6 @@
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
             z-index: 999;
-        }
-
-        /* 加载提示样式 */
-        #loading {
-            margin: 50px 0;
-            font-size: 24px;
-            text-align: center;
-        }
-        
-        #content {
-            margin: 20px 0;
-            min-height: 300px;
         }
     </style>
     <script>
@@ -128,12 +100,10 @@
         
         function loadRandomPage() {
             const contentDiv = document.getElementById('content');
-            const loadingDiv = document.getElementById('loading');
             const favoriteBtn = document.getElementById('favoriteButton');
             
             if (htmlFiles.length === 0) {
-                loadingDiv.textContent = '没有可用的资源了！';
-                contentDiv.innerHTML = '<p style="color:red;text-align:center">所有资源都已尝试加载，但没有可用的内容。</p>';
+                contentDiv.innerHTML = '<h1>没有可用的资源了！</h1><p>所有资源都已尝试加载，但没有可用的内容。</p>';
                 return;
             }
             
@@ -154,7 +124,6 @@
                     }
                 })
                 .then(html => {
-                    loadingDiv.style.display = 'none';
                     contentDiv.innerHTML = html;
                     favoriteBtn.style.display = 'flex';
                 })
@@ -171,10 +140,10 @@
             const modalBackground = document.getElementById('modalBackground');
             const pageLinkInput = document.getElementById('pageLink');
             
-            // 修正：直接使用当前页面链接，不拼接
-            pageLinkInput.value = currentLoadedPage.includes('http') ? 
+            // 直接使用当前页面链接，如果是相对路径则拼接当前域名
+            pageLinkInput.value = currentLoadedPage.includes('://') ? 
                 currentLoadedPage : 
-                window.location.href.replace('suiji.html', currentLoadedPage);
+                `${window.location.protocol}//${window.location.host}/${currentLoadedPage}`;
             
             modal.style.display = 'block';
             modalBackground.style.display = 'block';
@@ -192,35 +161,32 @@
             alert('链接已复制到剪贴板！');
             hideFavoriteModal();
         }
+        
+        // 页面加载时立即执行
+        loadRandomPage();
     </script>
 </head>
 <body>
-    <div id="container">
-        <h1>随机资源加载器</h1>
-        <div id="loading">正在为您寻找资源...</div>
-        <div id="content"></div>
-        <button id="view-all-button" onclick="window.location.href='all.html'">点我查看所有</button>
+    <div id="content">
+        <h1>正在为你寻找资源...请稍后...</h1>
+        <br />
+        <a id="xunlei" href="https://qm.qq.com/q/HVqNbzS1aM">点我查看所有</a>
     </div>
-    
+
     <!-- 悬浮收藏按钮 -->
     <button id="favoriteButton" onclick="showFavoriteModal()">
-        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTE5IDIxbC03LTVsLTcgNVY1YTIgMiAwIDAgMSAyLTJoMTBhMiAyIDAgMCAxIDIgMnoiPjwvcGF0aD48L3N2Zz4=" alt="收藏">
+        <img src="https://xiaobeirepo.github.io/repo2/Five-pointed_star.svg" alt="收藏" />
     </button>
 
-    <!-- 模态背景 -->
-    <div id="modalBackground" onclick="hideFavoriteModal()"></div>
-
     <!-- 收藏弹窗 -->
+    <div id="modalBackground" onclick="hideFavoriteModal()"></div>
     <div id="favoriteModal">
-        <h2>收藏此页面</h2>
-        <p>当前页面链接：</p>
+        <h2>当前页面链接：</h2>
         <textarea id="pageLink" readonly></textarea>
+        <br />
         <button onclick="copyToClipboard()">复制链接</button>
-        <button onclick="hideFavoriteModal()" style="background-color: #6c757d;">关闭</button>
+        <p>复制页面链接收藏好（添加书签或发给好友）～</p>
+        <button onclick="hideFavoriteModal()">关闭</button>
     </div>
-
-    <script>
-        window.onload = loadRandomPage;
-    </script>
 </body>
 </html>

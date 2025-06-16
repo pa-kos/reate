@@ -8,7 +8,7 @@
         /* 悬浮按钮样式 */
         #favoriteButton {
             position: fixed;
-            bottom: 80px; /* 调整按钮位置 */
+            bottom: 80px;
             right: 20px;
             width: 50px;
             height: 50px;
@@ -16,7 +16,7 @@
             color: white;
             border: none;
             border-radius: 50%;
-            display: none; /* 初始隐藏，加载完成后显示 */
+            display: none;
             align-items: center;
             justify-content: center;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -36,19 +36,19 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 80%; /* 增大窗口宽度 */
-            max-width: 500px; /* 设置最大宽度 */
+            width: 80%;
+            max-width: 500px;
             background-color: white;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             padding: 30px;
-            border-radius: 15px; /* 圆角增加 */
+            border-radius: 15px;
             text-align: center;
             z-index: 1000;
         }
 
         #favoriteModal textarea {
             width: 100%;
-            height: 70px; /* 增大文本框高度 */
+            height: 70px;
             margin: 10px 0;
             padding: 10px;
             resize: none;
@@ -66,12 +66,12 @@
             border: none;
             border-radius: 5px;
             color: white;
-            background-color: #007bff; /* 蓝色背景 */
+            background-color: #007bff;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         #favoriteModal button:hover {
-            background-color: #0056b3; /* 深蓝色悬停效果 */
+            background-color: #0056b3;
         }
 
         /* 模态背景 */
@@ -96,7 +96,7 @@
             'page5.html'
         ];
         
-        let currentLoadedPage = ''; // 当前加载的页面链接
+        let currentLoadedPage = '';
         
         function loadRandomPage() {
             const contentDiv = document.getElementById('content');
@@ -124,7 +124,7 @@
                     }
                 })
                 .then(html => {
-                    contentDiv.innerHTML = html;
+                    contentDiv.innerHTML = html + contentDiv.querySelector('#xunlei').outerHTML;
                     favoriteBtn.style.display = 'flex';
                 })
                 .catch(error => {
@@ -140,7 +140,6 @@
             const modalBackground = document.getElementById('modalBackground');
             const pageLinkInput = document.getElementById('pageLink');
             
-            // 直接使用当前页面链接，如果是相对路径则拼接当前域名
             pageLinkInput.value = currentLoadedPage.includes('://') ? 
                 currentLoadedPage : 
                 `${window.location.protocol}//${window.location.host}/${currentLoadedPage}`;
@@ -162,7 +161,6 @@
             hideFavoriteModal();
         }
         
-        // 页面加载时立即执行
         loadRandomPage();
     </script>
 </head>
@@ -173,12 +171,10 @@
         <a id="xunlei" href="https://qm.qq.com/q/HVqNbzS1aM">点我查看所有</a>
     </div>
 
-    <!-- 悬浮收藏按钮 -->
     <button id="favoriteButton" onclick="showFavoriteModal()">
         <img src="https://xiaobeirepo.github.io/repo2/Five-pointed_star.svg" alt="收藏" />
     </button>
 
-    <!-- 收藏弹窗 -->
     <div id="modalBackground" onclick="hideFavoriteModal()"></div>
     <div id="favoriteModal">
         <h2>当前页面链接：</h2>

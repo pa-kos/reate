@@ -87,54 +87,56 @@
         }
     </style>
     <script>
-        // 定义 HTML 文件链接数组
-        let htmlFiles = [
+    // 定义 HTML 文件链接数组
+    let htmlFiles = [
             'https://pa-kos.github.io/vid2/ZJCSncFFnm.html',
             'https://pa-kos.github.io/vid2/KDIPKeFdEF.html',
             'https://pa-kos.github.io/vid2/mMOPuyHPvC.html',
             'https://pa-kos.github.io/vid2/ryjhFpmnyC.html',
             'https://pa-kos.github.io/vid2/rrApZDrChE.html',
             'https://pa-kos.github.io/vid2/inLlzOpmgP.html'
-        ];
+    ];
+    
+    let currentLoadedPage = '';
+    
+    function loadRandomPage() {
+        const contentDiv = document.getElementById('content');
+        const favoriteBtn = document.getElementById('favoriteButton');
+        const originalLink = contentDiv.querySelector('#xunlei').outerHTML; // 保存原始链接
         
-        let currentLoadedPage = '';
-        
-        function loadRandomPage() {
-            const contentDiv = document.getElementById('content');
-            const favoriteBtn = document.getElementById('favoriteButton');
-            
-            if (htmlFiles.length === 0) {
-                contentDiv.innerHTML = '<h1>没有可用的资源了！</h1><p>请进qq群获取最新资源吧</p>';
-                return;
-            }
-            
-            const randomIndex = Math.floor(Math.random() * htmlFiles.length);
-            const selectedFile = htmlFiles[randomIndex];
-            currentLoadedPage = selectedFile;
-            
-            fetch(selectedFile)
-                .then(response => {
-                    if (response.ok) {
-                        return response.text();
-                    } else if (response.status === 404) {
-                        htmlFiles.splice(randomIndex, 1);
-                        loadRandomPage();
-                        return Promise.reject('404 Not Found');
-                    } else {
-                        return Promise.reject('Other error');
-                    }
-                })
-                .then(html => {
-                    contentDiv.innerHTML = html + contentDiv.querySelector('#xunlei').outerHTML;
-                    favoriteBtn.style.display = 'flex';
-                })
-                .catch(error => {
-                    if (error !== '404 Not Found') {
-                        htmlFiles.splice(randomIndex, 1);
-                        loadRandomPage();
-                    }
-                });
+        if (htmlFiles.length === 0) {
+            contentDiv.innerHTML = '<h1>没有可用的资源了！</h1><p>所有资源都已尝试加载，但没有可用的内容。</p>' + originalLink;
+            return;
         }
+        
+        const randomIndex = Math.floor(Math.random() * htmlFiles.length);
+        const selectedFile = htmlFiles[randomIndex];
+        currentLoadedPage = selectedFile;
+        
+        fetch(selectedFile)
+            .then(response => {
+                if (response.ok) {
+                    return response.text();
+                } else if (response.status === 404) {
+                    htmlFiles.splice(randomIndex, 1);
+                    loadRandomPage();
+                    return Promise.reject('404 Not Found');
+                } else {
+                    return Promise.reject('Other error');
+                }
+            })
+            .then(html => {
+                // 将新内容插入到链接之前
+                contentDiv.innerHTML = html + originalLink;
+                favoriteBtn.style.display = 'flex';
+            })
+            .catch(error => {
+                if (error !== '404 Not Found') {
+                    htmlFiles.splice(randomIndex, 1);
+                    loadRandomPage();
+                }
+            });
+    }
         
         function showFavoriteModal() {
             const modal = document.getElementById('favoriteModal');
